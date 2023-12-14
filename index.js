@@ -1,8 +1,7 @@
-// Dynamically import the inquirer module
 import('inquirer').then((inquirerModule) => {
     const inquirer = inquirerModule.default;
-    const { Circle, Triangle, Square } = require('./lib/shapes'); // This will also need to be imported dynamically if you convert it to ESM
-    const fs = require('fs'); // Consider using `fs/promises` module for promise-based interaction
+    const fs = require('fs');
+    const { Circle, Triangle, Square } = require('./lib/shapes');
   
     function promptUser() {
       const questions = [
@@ -44,17 +43,24 @@ import('inquirer').then((inquirerModule) => {
           case 'square':
             shape = new Square(answers.shapeColor);
             break;
+          default:
+            console.error('Invalid shape type selected');
+            return;
         }
   
         const svgContent = shape.render(answers.text, answers.textColor);
-  
-        fs.writeFile('logo.svg', svgContent, (err) => {
-          if (err) throw err;
-          console.log('Generated logo.svg');
+        fs.writeFile('logo.svg', svgContent, 'utf8', (err) => {
+          if (err) {
+            console.error('Error writing to file:', err);
+          } else {
+            console.log('Generated logo.svg');
+          }
         });
       });
     }
   
     promptUser();
-  }).catch(error => console.error('Error importing inquirer:', error));
+  }).catch((error) => {
+    console.error('Error importing inquirer:', error);
+  });
   
